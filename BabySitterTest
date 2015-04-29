@@ -1,0 +1,136 @@
+import org.junit.Test;
+import org.junit.Assert;
+
+
+public class BabySitterTest {
+
+
+
+    @Test
+    public void calculateNoHoursWorked() throws Exception {
+        Integer salary = BabySitter.calculate(5, 7, 0);
+        Assert.assertTrue(salary == 0);
+    }
+
+    @Test
+    public void startTimeEarlierThan5pmThrowsError() throws Exception {
+        try {
+            BabySitter.calculate(4, 9, 10);
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage().equals(BabySitter.ERR_START_TIME_INVALID));
+            return;
+        }
+        Assert.fail();
+    }
+
+    @Test
+    public void durationOfHoursWorkedGreaterThan11HoursThrowsError() throws Exception {
+        try {
+            BabySitter.calculate(5, 9, 12);
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage().equals(BabySitter.ERR_DURATION_INVALID));
+            return;
+        }
+        Assert.fail();
+    }
+
+    @Test
+    public void bedTimeIs1AMPastMidnightThrowsError() throws Exception {
+        try {
+            BabySitter.calculate(5, 1, 10);
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage().equals(BabySitter.ERR_BEDTIME_MIDNIGHT));
+            return;
+        }
+        Assert.fail();
+    }
+
+    @Test
+    public void bedTimeIsGreaterThan12AMThrowsError() throws Exception {
+        try {
+            BabySitter.calculate(12, 17, 4);
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage().equals(BabySitter.ERR_BEDTIME_MIDNIGHT));
+            return;
+        }
+        Assert.fail();
+    }
+
+    @Test
+    public void hoursWorkedPast4AMThrowsError() throws Exception {
+        try {
+            BabySitter.calculate(12, 12, 5);
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage().equals(BabySitter.ERR_DURATION_INVALID));
+            return;
+        }
+        Assert.fail();
+    }
+
+    @Test
+    public void startTimeBefore12AMAndHoursPast4AMThrowsError() throws Exception {
+        try {
+            BabySitter.calculate(11, 12, 6);
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage().equals(BabySitter.ERR_DURATION_INVALID));
+            return;
+        }
+        Assert.fail();
+    }
+
+    @Test
+    public void startTimeAfter12AMAndHoursPast4AMThrowsError() throws Exception {
+        try {
+            BabySitter.calculate(1, 12, 5);
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage().equals(BabySitter.ERR_DURATION_INVALID));
+            return;
+        }
+        Assert.fail();
+    }
+
+    @Test
+    public void startTimeOnly4Hours() throws Exception {
+        Integer salary = BabySitter.calculate(5, 9, 4);
+        int expected = (BabySitter.Rate.StartTime.value * 4);
+        Assert.assertTrue("salary value:[" + salary + "] expected:[" + expected + "]", salary == expected);
+    }
+
+    @Test
+    public void startTimeHoursToBedtimeHoursExactlyHoursWorkedBefore12am()
+            throws Exception {
+        Integer salary = BabySitter.calculate(5, 11, 6);
+        Assert.assertTrue(salary == (12 * 6));
+    }
+
+    @Test
+    public void hoursWorkedGreaterThanStartTimeHoursToBedtimeHoursRange()
+            throws Exception {
+        Integer salary = BabySitter.calculate(5, 10, 7);
+        Assert.assertTrue(salary == (BabySitter.Rate.StartTime.value * 5)
+                + (BabySitter.Rate.BedTime.value * 2));
+    }
+
+    @Test
+    public void bedtimeBeforeStartTime() throws Exception {
+        Integer salary = BabySitter.calculate(6, 5, 6);
+        Assert.assertTrue(salary == (BabySitter.Rate.BedTime.value * 6));
+    }
+
+    @Test
+    public void midnightStartTime4Hours() throws Exception {
+        Integer salary = BabySitter.calculate(12, 5, 4);
+        int expected = (BabySitter.Rate.midnight.value * 4);
+        Assert.assertTrue("salary value:[" + salary + "] expected:[" + expected + "]", salary == expected);
+    }
+
+    @Test
+    public void AllRatesTest() throws Exception {
+        Integer salary = BabySitter.calculate(7, 9, 6);
+        int expected = (BabySitter.Rate.StartTime.value * 2)
+                + (BabySitter.Rate.BedTime.value * 3)
+                + (BabySitter.Rate.midnight.value * 1);
+        Assert.assertTrue("salary value:[" + salary + "] expected:[" + expected + "]", salary == expected);
+    }
+}
+
